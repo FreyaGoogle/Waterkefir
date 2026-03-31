@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>EPUB Bundel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #f2f2f7;
+      color: #1c1c1e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e5;
+      padding: 1.1rem 1.25rem 0.9rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    header p { font-size: 0.8rem; color: #8e8e93; margin-top: 0.1rem; }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    #token-screen {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    #token-screen h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+    #token-screen p { font-size: 0.85rem; color: #636366; margin-bottom: 1rem; line-height: 1.5; }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      border: 1px solid #e0e0e5;
+      border-radius: 10px;
+      padding: 0.7rem 0.85rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: #1c1c1e;
+      background: #f9f9fb;
+      -webkit-appearance: none;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 1rem;
+    }
+
+    input:focus, textarea:focus { border-color: #007aff; background: #fff; }
+
+    textarea { min-height: 220px; resize: vertical; line-height: 1.6; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:active { opacity: 0.75; transform: scale(0.98); }
+    .btn-primary { background: #007aff; color: #fff; }
+    .btn-secondary { background: #e5e5ea; color: #1c1c1e; margin-top: 0.6rem; }
+    .btn-danger { background: #ff3b30; color: #fff; margin-top: 0.6rem; }
+    .btn:disabled { opacity: 0.45; cursor: default; }
+
+    #status {
+      display: none;
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    #status.success { background: #d1f2e0; color: #1a6636; display: block; }
+    #status.error   { background: #fde8e8; color: #c0392b; display: block; }
+    #status.loading { background: #e8f0fe; color: #1a56db; display: block; }
+
+    .article-list { list-style: none; }
+
+    .article-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f2f2f7;
+      font-size: 0.9rem;
+    }
+
+    .article-item:last-child { border-bottom: none; }
+    .article-item-title { font-weight: 500; }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      background: #e5e5ea;
+      color: #636366;
+      white-space: nowrap;
+    }
+
+    .empty-state { text-align: center; padding: 2rem 1rem; color: #8e8e93; font-size: 0.9rem; }
+
+    .build-section { background: #fff; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+    .build-section p { font-size: 0.85rem; color: #636366; margin-bottom: 0.75rem; line-height: 1.5; }
+
+    .shortcut-box {
+      background: #fff3cd;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #856404;
+    }
+
+    .shortcut-box strong { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; }
+
+    code {
+      background: #f2f2f7;
+      padding: 0.1rem 0.4rem;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      color: #1c1c1e;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>EPUB Bundel</h1>
+  <p>Artikelen beheren</p>
+</header>
+
+<div class="container">
+
+  <div id="token-screen" style="display:none">
+    <h2>GitHub token instellen</h2>
+    <p>Voer je GitHub Personal Access Token in. Deze wordt alleen lokaal op je apparaat opgeslagen.</p>
+    <label for="token-input">Token</label>
+    <input type="password" id="token-input" placeholder="ghp_..."/>
+    <button class="btn btn-primary" onclick="saveToken()">Opslaan</button>
+  </div>
+
+  <div id="app-screen" style="display:none">
+
+    <div id="status"></div>
+
+    <div class="card">
+      <h2>Nieuw artikel</h2>
+
+      <label for="titel">Titel</label>
+      <input type="text" id="titel" placeholder="Naam van het artikel"/>
+
+      <div class="row">
+        <div>
+          <label for="datum">Datum</label>
+          <input type="date" id="datum"/>
+        </div>
+        <div>
+          <label for="categorie">Categorie</label>
+          <input type="text" id="categorie" placeholder="Algemeen"/>
+        </div>
+      </div>
+
+      <label for="tekst">Tekst</label>
+      <textarea id="tekst" placeholder="Schrijf hier je artikel...&#10;&#10;Alinea's scheiden met een lege regel.&#10;&#10;- Bullet punt&#10;- Nog een punt"></textarea>
+
+      <input type="file" id="img-input" accept="image/*" style="display:none" onchange="uploadImage(this)"/>
+      <button class="btn btn-secondary" style="margin-bottom:1rem;margin-top:0;" onclick="document.getElementById('img-input').click()">
+        + Afbeelding invoegen
+      </button>
+      <div id="img-status" style="font-size:0.8rem;color:#636366;margin-bottom:0.75rem;display:none;"></div>
+
+      <button class="btn btn-primary" id="save-btn" onclick="saveArticle()">Opslaan in bundel</button>
+    </div>
+
+    <div class="shortcut-box">
+      <strong>Tip: gebruik de Delen-knop</strong>
+      Selecteer tekst in Safari of een andere app → tik op <strong>Delen</strong> → kies <strong>Opslaan in EPUB</strong>.
+    </div>
+
+    <div class="build-section">
+      <p>Nadat je artikelen hebt toegevoegd kun je hier de EPUB bouwen. Download hem daarna via GitHub Actions.</p>
+      <button class="btn btn-primary" onclick="triggerBuild()">EPUB bouwen</button>
+      <button class="btn btn-secondary" onclick="openActions()">Naar GitHub Actions →</button>
+    </div>
+
+    <div class="card">
+      <h2>Artikelen in bundel</h2>
+      <ul class="article-list" id="article-list">
+        <li class="empty-state">Bezig met laden...</li>
+      </ul>
+    </div>
+
+    <div style="text-align:center; padding-bottom: 2rem;">
+      <button class="btn btn-secondary" onclick="copyToken()" style="width:auto;padding:0.5rem 1.2rem;font-size:0.85rem;">Token kopiëren</button>
+      <button class="btn btn-danger" style="width:auto;padding:0.5rem 1.2rem;font-size:0.85rem;margin-left:0.5rem;" onclick="resetToken()">Token verwijderen</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const OWNER  = 'FreyaGoogle';
+  const REPO   = 'epub-bundel';
+  const BRANCH = 'main';
+
+  function getToken() { return localStorage.getItem('gh_token'); }
+
+  function saveToken() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) return;
+    localStorage.setItem('gh_token', t);
+    init();
+  }
+
+  function resetToken() {
+    if (!confirm('Token verwijderen?')) return;
+    localStorage.removeItem('gh_token');
+    init();
+  }
+
+  function copyToken() {
+    const t = getToken();
+    if (!t) { showStatus('Geen token opgeslagen.', 'error'); return; }
+    navigator.clipboard.writeText(t).then(() => showStatus('Token gekopieerd.', 'success'));
+  }
+
+  async function ghFetch(path, options = {}) {
+    return fetch(`https://api.github.com${path}`, {
+      ...options,
+      headers: {
+        'Authorization': `token ${getToken()}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json',
+        ...(options.headers || {}),
+      },
+    });
+  }
+
+  function toFilename(datum) {
+    const d = datum || new Date().toISOString().slice(0, 10);
+    const t = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
+    return `${d}_${t}.txt`;
+  }
+
+  async function uploadImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const statusEl = document.getElementById('img-status');
+    statusEl.style.display = 'block';
+    statusEl.textContent = `Uploaden: ${file.name}...`;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const base64 = e.target.result.split(',')[1];
+      const filename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `input/images/${filename}`;
+
+      try {
+        let sha;
+        const check = await ghFetch(`/repos/${OWNER}/${REPO}/contents/${path}`);
+        if (check.ok) sha = (await check.json()).sha;
+
+        const body = { message: `Afbeelding: ${filename}`, content: base64, branch: BRANCH };
+        if (sha) body.sha = sha;
+
+        const res = await ghFetch(`/repos/${OWNER}/${REPO}/contents/${path}`, {
+          method: 'PUT',
+          body: JSON.stringify(body),
+        });
+
+        if (res.ok) {
+          const textarea = document.getElementById('tekst');
+          const cursor = textarea.selectionStart;
+          const tag = `\n\n![](images/${filename})\n\n`;
+          textarea.value = textarea.value.slice(0, cursor) + tag + textarea.value.slice(cursor);
+          textarea.focus();
+          textarea.setSelectionRange(cursor + tag.length, cursor + tag.length);
+          statusEl.textContent = `✓ ${filename} ingevoegd`;
+          setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+        } else {
+          const err = await res.json();
+          statusEl.textContent = `Fout: ${err.message}`;
+        }
+      } catch (err) {
+        statusEl.textContent = 'Uploadfout. Controleer je verbinding.';
+      }
+      input.value = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function saveArticle() {
+    const titel     = document.getElementById('titel').value.trim();
+    const datum     = document.getElementById('datum').value;
+    const categorie = document.getElementById('categorie').value.trim() || 'Algemeen';
+    const tekst     = document.getElementById('tekst').value.trim();
+
+    if (!titel) { showStatus('Vul een titel in.', 'error'); return; }
+    if (!tekst)  { showStatus('Vul een tekst in.', 'error'); return; }
+
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    showStatus('Opslaan...', 'loading');
+
+    const content  = `TITEL: ${titel}\nDATUM: ${datum}\nCATEGORIE: ${categorie}\n---\n${tekst}\n`;
+    const filename = toFilename(datum);
+    const encoded  = btoa(unescape(encodeURIComponent(content)));
+
+    try {
+      const res = await ghFetch(`/repos/${OWNER}/${REPO}/contents/input/${filename}`, {
+        method: 'PUT',
+        body: JSON.stringify({ message: `Artikel: ${titel}`, content: encoded, branch: BRANCH }),
+      });
+
+      if (res.ok) {
+        showStatus(`"${titel}" opgeslagen.`, 'success');
+        document.getElementById('titel').value = '';
+        document.getElementById('tekst').value = '';
+        document.getElementById('datum').value = new Date().toISOString().slice(0, 10);
+        document.getElementById('categorie').value = '';
+        loadArticles();
+      } else {
+        const err = await res.json();
+        showStatus(`Fout: ${err.message}`, 'error');
+      }
+    } catch (e) {
+      showStatus('Verbindingsfout.', 'error');
+    }
+
+    btn.disabled = false;
+  }
+
+  async function triggerBuild() {
+    showStatus('Workflow starten...', 'loading');
+    try {
+      const res = await ghFetch(`/repos/${OWNER}/${REPO}/actions/workflows/build-epub.yml/dispatches`, {
+        method: 'POST',
+        body: JSON.stringify({ ref: BRANCH }),
+      });
+      if (res.status === 204) {
+        showStatus('GitHub bouwt de EPUB. Ga naar Actions om te downloaden (~1 min).', 'success');
+      } else {
+        const err = await res.json();
+        showStatus(`Fout: ${err.message}`, 'error');
+      }
+    } catch (e) {
+      showStatus('Kon workflow niet starten.', 'error');
+    }
+  }
+
+  function openActions() {
+    window.open(`https://github.com/${OWNER}/${REPO}/actions`, '_blank');
+  }
+
+  async function loadArticles() {
+    const list = document.getElementById('article-list');
+    try {
+      const res = await ghFetch(`/repos/${OWNER}/${REPO}/contents/input?ref=${BRANCH}`);
+      if (!res.ok) { list.innerHTML = '<li class="empty-state">Kon bestanden niet laden.</li>'; return; }
+      const files = await res.json();
+      const txts  = files.filter(f => f.name.endsWith('.txt'));
+      if (!txts.length) {
+        list.innerHTML = '<li class="empty-state">Nog geen artikelen.</li>';
+        return;
+      }
+      list.innerHTML = txts.map(f =>
+        `<li class="article-item">
+          <div class="article-item-title">${f.name.replace(/\.txt$/, '')}</div>
+          <span class="badge">txt</span>
+        </li>`
+      ).join('');
+    } catch (e) {
+      list.innerHTML = '<li class="empty-state">Fout bij laden.</li>';
+    }
+  }
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = type;
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (type === 'success') setTimeout(() => { el.style.display = 'none'; }, 4000);
+  }
+
+  function init() {
+    const token = getToken();
+    document.getElementById('token-screen').style.display = token ? 'none' : 'block';
+    document.getElementById('app-screen').style.display   = token ? 'block' : 'none';
+    if (token) {
+      document.getElementById('datum').value = new Date().toISOString().slice(0, 10);
+      loadArticles();
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
