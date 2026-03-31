@@ -1,0 +1,19 @@
+TITEL: Voorbeeld: AI in de praktijk
+DATUM: 2025-06-01
+CATEGORIE: Tools
+---
+Dit is een voorbeeldartikel dat laat zien hoe je tekstbestanden aanlevert voor de EPUB-bundel.
+
+Elke alinea wordt gescheiden door een lege regel. De tekst wordt automatisch omgezet naar nette HTML.
+
+Dit is een tweede alinea. Je kunt zo lang schrijven als je wilt — de opmaak wordt automatisch netjes weergegeven in de Boeken-app.
+
+Hieronder een opsomming:
+
+- Eerste punt van de lijst
+- Tweede punt van de lijst
+- Derde punt met wat meer tekst erin
+
+Na de opsomming kan de tekst gewoon doorgaan als normale alinea's.
+
+Zo simpel is het formaat. Sla het bestand op als .txt in de input/-map en draai het script.
